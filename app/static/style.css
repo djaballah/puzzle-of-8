@@ -95,3 +95,13 @@ body {
     font-family: Arial;
     color: #F9FFE1;
 }
+
+#solve-button {
+    color: #A2B3C4;
+    text-decoration: none;
+    border: #F3F5FF solid 1px;
+    padding: 10px 200px;
+    border-radius: 4px;
+    background-color: #F2EDEC;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.1);
+}

@@ -224,17 +224,37 @@ class Board {
 
 const boardGame = new Board();
 boardGame.drawBoard();
-async function solve() {
-    let path = [
-        'D', 'R', 'U', 'L'
-    ]
+async function solve(path) {
+    console.log('solving');
     let a = {
-        "D": boardGame.moveBlankDown.bind(boardGame),
-        "R": boardGame.moveBlankRight.bind(boardGame),
-        "U": boardGame.moveBlankUp.bind(boardGame),
-        "L": boardGame.moveBlankLeft.bind(boardGame)
+        "DOWN": boardGame.moveBlankDown.bind(boardGame),
+        "RIGHT": boardGame.moveBlankRight.bind(boardGame),
+        "UP": boardGame.moveBlankUp.bind(boardGame),
+        "LEFT": boardGame.moveBlankLeft.bind(boardGame)
     }
     for (mv of path) {
+        console.log(mv);
         await a[mv]();
     }
 }
+
+btn = document.getElementById("solve-button");
+btn.addEventListener("click", async () => {
+    console.log('clicked');
+    console.log(boardGame.board.flat());
+    let res = await fetch(
+        'https://0fl5l969mj.execute-api.us-east-2.amazonaws.com/dev/solution',{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            cors: true,
+            body: JSON.stringify({data: boardGame.board.flat()})
+        });
+    let data = await res.json();
+    console.log(JSON.parse(data.body));
+    await solve(JSON.parse(data.body));
+});
+
+//solve();
