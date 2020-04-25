@@ -11,13 +11,7 @@ function inversionCount(arr) {
 }
 
 function boardToArray(board) {
-    let arr = [];
-    for (let i = 0; i < 3; ++i) {
-        for (let j = 0; j < 0; ++j) {
-            arr.push(board[i][j]);
-        }
-    }
-    return arr;
+    return board.flat();
 }
 
 function isSolvable(board) {
@@ -61,7 +55,6 @@ class Board {
             }
             result.push(row);
         };
-        console.log(result);
         return result;
     }
 
