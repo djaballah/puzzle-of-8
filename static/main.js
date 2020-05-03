@@ -25,6 +25,9 @@ function isBlank(tile) {
     return tile == 0;
 };
 
+function solved(board) {
+    return boardToArray(board).toString() == "0,1,2,3,4,5,6,7,8";
+}
 
 class Board {
     constructor() {
@@ -215,7 +218,7 @@ class Board {
 
 }
 
-const boardGame = new Board();
+let boardGame = new Board();
 boardGame.drawBoard();
 async function solve(path) {
     console.log('solving');
@@ -233,21 +236,35 @@ async function solve(path) {
 
 btn = document.getElementById("solve-button");
 btn.addEventListener("click", async () => {
-    console.log('clicked');
-    console.log(boardGame.board.flat());
-    let res = await fetch(
-        'https://0fl5l969mj.execute-api.us-east-2.amazonaws.com/dev/solution',{
+    if (! solved(boardGame.board)){
+        document.getElementById("solve-button").style["pointer-events"] = "none";
+        document.getElementById("solve-button").style.cursor = "default";
+        console.log('clicked');
+        console.log(boardGame.board.flat());
+        let res = await fetch(
+            'https://0fl5l969mj.execute-api.us-east-2.amazonaws.com/dev/solution', {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             cors: true,
-            body: JSON.stringify({data: boardGame.board.flat()})
+            body: JSON.stringify({ data: boardGame.board.flat() })
         });
-    let data = await res.json();
-    console.log(JSON.parse(data.body));
-    await solve(JSON.parse(data.body));
+        let data = await res.json();
+        console.log(JSON.parse(data.body));
+        await solve(JSON.parse(data.body));
+        document.getElementById("solve-button").innerText = "Rearrange";
+        document.getElementById("solve-button").style["pointer-events"] = "auto";
+        document.getElementById("solve-button").style.cursor = "pointer";
+    }
+    else {
+        document.getElementById("game-board").innerHTML = "";
+        boardGame = new Board();
+        boardGame.drawBoard();
+        document.getElementById("solve-button").innerText = "Solve";
+    }
+
 });
 
 //solve();
