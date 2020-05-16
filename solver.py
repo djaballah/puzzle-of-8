@@ -6,7 +6,7 @@ import time
 import copy
 from heapq import heappush, heappop
 import random
-from itertools import *
+from itertools import islice, count
 
 
 class Board:
@@ -39,67 +39,67 @@ class Board:
             print("\n")
 
     def move_down(self, i, j):
-        boards = Board(self.__dimension)
-        boards.__board = copy.deepcopy(self.__board)
-        boards.__parent = self
-        boards.__move = "DOWN"
-        boards.__depth = self.__depth + 1
-        temp = boards.__board[i][j]
-        boards.__board[i][j] = boards.__board[i + 1][j]
-        boards.__board[i + 1][j] = temp
-        return boards
+        board = Board(self.__dimension)
+        board.__board = copy.deepcopy(self.__board)
+        board.__parent = self
+        board.__move = "DOWN"
+        board.__depth = self.__depth + 1
+        temp = board.__board[i][j]
+        board.__board[i][j] = board.__board[i + 1][j]
+        board.__board[i + 1][j] = temp
+        return board
 
     def move_up(self, i, j):
-        boards = Board(self.__dimension)
-        boards.__board = copy.deepcopy(self.__board)
-        boards.__parent = self
-        boards.__move = "UP"
-        boards.__depth = self.__depth + 1
-        temp = boards.__board[i][j]
-        boards.__board[i][j] = boards.__board[i - 1][j]
-        boards.__board[i - 1][j] = temp
-        return boards
+        board = Board(self.__dimension)
+        board.__board = copy.deepcopy(self.__board)
+        board.__parent = self
+        board.__move = "UP"
+        board.__depth = self.__depth + 1
+        temp = board.__board[i][j]
+        board.__board[i][j] = board.__board[i - 1][j]
+        board.__board[i - 1][j] = temp
+        return board
 
     def move_right(self, i, j):
-        boards = Board(self.__dimension)
-        boards.__board = copy.deepcopy(self.__board)
-        boards.__parent = self
-        boards.__move = "RIGHT"
-        boards.__depth = self.__depth + 1
-        temp = boards.__board[i][j]
-        boards.__board[i][j] = boards.__board[i][j + 1]
-        boards.__board[i][j + 1] = temp
-        return boards
+        board = Board(self.__dimension)
+        board.__board = copy.deepcopy(self.__board)
+        board.__parent = self
+        board.__move = "RIGHT"
+        board.__depth = self.__depth + 1
+        temp = board.__board[i][j]
+        board.__board[i][j] = board.__board[i][j + 1]
+        board.__board[i][j + 1] = temp
+        return board
 
     def move_left(self, i, j):
-        boards = Board(self.__dimension)
-        boards.__board = copy.deepcopy(self.__board)
-        boards.__parent = self
-        boards.__move = "LEFT"
-        boards.__depth = self.__depth + 1
-        temp = boards.__board[i][j]
-        boards.__board[i][j] = boards.__board[i][j - 1]
-        boards.__board[i][j - 1] = temp
-        return boards
+        board = Board(self.__dimension)
+        board.__board = copy.deepcopy(self.__board)
+        board.__parent = self
+        board.__move = "LEFT"
+        board.__depth = self.__depth + 1
+        temp = board.__board[i][j]
+        board.__board[i][j] = board.__board[i][j - 1]
+        board.__board[i][j - 1] = temp
+        return board
 
     def neighbors(self):
         i = 0
         j = 0
-        neighbor = []
+        neighbors = []
         for line in self.__board:
             if 0 in line:
                 i = self.__board.index(line)
                 j = line.index(0)
                 break
         if i > 0:
-            neighbor.append(self.move_up(i, j))
+            neighbors.append(self.move_up(i, j))
         if i < self.__dimension - 1:
-            neighbor.append(self.move_down(i, j))
+            neighbors.append(self.move_down(i, j))
         if j > 0:
-            neighbor.append(self.move_left(i, j))
+            neighbors.append(self.move_left(i, j))
         if j < self.__dimension - 1:
-            neighbor.append(self.move_right(i, j))
-        return neighbor
+            neighbors.append(self.move_right(i, j))
+        return neighbors
 
     def heuristic(self):
         h = 0
@@ -148,22 +148,16 @@ class Pqueue:
         if (e[0] not in self.__pSet) and (exist == 0):
             self.__q.put(e)
             self.__pSet.add(e[0])
-            #print("Just Add :", e)
             return
         if (e[0] in self.__pSet) and (exist == 0):
             self.__q.put((e[0], e[1] + 1, e[2]))
-            #print("Pr Existe")
-            #print("Just Add :", (e[0], e[1] + 1, e[2]))
             return
         if (e[0] not in self.__pSet) and (exist != 1):
             if priority < exist:
                 self.__dic[strBoard] = priority
                 self.__q.put((e[0], e[1] - 1, e[2]))
                 self.__pSet.add(e[0])
-                #print("Just Add :", (e[0], e[1] - 1, e[2]))
             return
-
-        #print(e)
 
     def remove(self):
         state = self.__q.get()
@@ -172,7 +166,7 @@ class Pqueue:
     def length(self):
         return self.__q.qsize()
 
-def A(bbb):
+def game_solver(initial_ordre):
     dim = 3
     initial = Board(dim)
     l = [r for r in range(dim * dim)]
@@ -182,11 +176,8 @@ def A(bbb):
         board.append(l.pop(index))
     board = [r for r in range(dim * dim)]
     board.reverse()
-    print(board)
-    #initial.set_board(board)
-    initial.set_board(bbb)
+    initial.set_board(initial_ordre)
     initial.printBoard()
-    #time.sleep(3)
     frontier = Pqueue()
     frontier.add((initial.heuristic() + initial.get_depth(), 0, initial))
     explored = set()
@@ -198,20 +189,14 @@ def A(bbb):
     priority_2 = 0
     while frontier.length() != 0:
         a = frontier.remove()
-        # print(a)
         state = a[2]
         if str(state.get_board()) in explored:
-            #print("Continue")
             continue
         else:
             pass
-            #print("Not continue")
         explored.add(str(state.get_board()))
         seen.add(str(state.get_board()))
-        print("search_depth :", state.get_depth())
-        #print("h :", state.heuristic())
-        #state.printBoard()
-        #	time.sleep(2)
+
         if state.get_board() == [[a for a in  islice(count(i), dim)]  for i in range(0, (dim * dim) - 1, dim)]:
             print("Goal achieved")
             state.printBoard()
@@ -237,31 +222,23 @@ def A(bbb):
         for neighbor in l:
             if str(neighbor.get_board()) not in seen:
                 priority_2 += 1
-                #print("About to add :", (neighbor.heuristic() + neighbor.get_depth(), priority_2, neighbor))
                 frontier.add((neighbor.heuristic() + neighbor.get_depth(), priority_2, neighbor))
                 seen.add(str(neighbor.get_board()))
-            # print("search_depth :", neighbor.get_depth())
-            # print("g :", neighbor.heuristic() + neighbor.get_depth())
-            # neighbor.printBoard()
 
             if max_fring_size < frontier.length():
                 max_fring_size = frontier.length()
             if max_search_depth < state.get_depth():
                 max_search_depth = state.get_depth()
+
 def lambda_handler(event, context):
     # TODO implement
-    print(event)
     data = event["body-json"]["data"]
-    #return event
-    #data = sorted(data)
-    #return event
     return {
         'statusCode': 200,
-        'body': json.dumps(A(data)),
+        'body': json.dumps(game_solver(data)),
         'headers': json.dumps({
             'Access-Control-Allow-Origin' : '*',
             'Access-Control-Allow-Headers':'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-
             'Content-Type': 'application/json'
         })
     }
