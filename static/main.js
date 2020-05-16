@@ -21,7 +21,6 @@ function isSolvable(board) {
 }
 
 function isBlank(tile) {
-    console.log(tile);
     return tile == 0;
 };
 
@@ -87,7 +86,6 @@ class Board {
     }
 
     async moveBlankDown() {
-        console.log('Down')
         const blankTile = document.getElementById('0');
         const tileBelowId = this.board[this.blankI + 1][this.blankJ];
         const tileBelow = document.getElementById(String(tileBelowId));
@@ -121,7 +119,6 @@ class Board {
     }
 
     async moveBlankUp() {
-        console.log('Up');
         const blankTile = document.getElementById('0');
         const tileBelowId = this.board[this.blankI - 1][this.blankJ];
         const tileBelow = document.getElementById(String(tileBelowId));
@@ -153,7 +150,6 @@ class Board {
     }
 
     async moveBlankRight() {
-        console.log('right');
         const blankTile = document.getElementById('0');
         const tileBelowId = this.board[this.blankI][this.blankJ + 1];
         const tileBelow = document.getElementById(String(tileBelowId));
@@ -185,7 +181,6 @@ class Board {
     }
 
     async moveBlankLeft() {
-        console.log('left');
         const blankTile = document.getElementById('0');
         const tileBelowId = this.board[this.blankI][this.blankJ - 1];
         const tileBelow = document.getElementById(String(tileBelowId));
@@ -221,7 +216,6 @@ class Board {
 let boardGame = new Board();
 boardGame.drawBoard();
 async function solve(path) {
-    console.log('solving');
     let a = {
         "DOWN": boardGame.moveBlankDown.bind(boardGame),
         "RIGHT": boardGame.moveBlankRight.bind(boardGame),
@@ -229,7 +223,6 @@ async function solve(path) {
         "LEFT": boardGame.moveBlankLeft.bind(boardGame)
     }
     for (mv of path) {
-        console.log(mv);
         await a[mv]();
     }
 }
@@ -239,8 +232,6 @@ btn.addEventListener("click", async () => {
     if (! solved(boardGame.board)){
         document.getElementById("solve-button").style["pointer-events"] = "none";
         document.getElementById("solve-button").style.cursor = "default";
-        console.log('clicked');
-        console.log(boardGame.board.flat());
         let res = await fetch(
             'https://0fl5l969mj.execute-api.us-east-2.amazonaws.com/dev/solution', {
             method: "POST",
@@ -252,7 +243,6 @@ btn.addEventListener("click", async () => {
             body: JSON.stringify({ data: boardGame.board.flat() })
         });
         let data = await res.json();
-        console.log(JSON.parse(data.body));
         await solve(JSON.parse(data.body));
         document.getElementById("solve-button").innerText = "Rearrange";
         document.getElementById("solve-button").style["pointer-events"] = "auto";
